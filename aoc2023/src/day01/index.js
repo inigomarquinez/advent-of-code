@@ -22,10 +22,20 @@ const part2 = (rawInput) => {
   const VALID_NUMBERS = ['one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine'];
   const VALID_NUMBERS_CONVERSION = ['1', '2', '3', '4', '5', '6', '7', '8', '9'];
 
-  const validNumbersRegex = new RegExp(VALID_NUMBERS.join('|').concat('|\\d'), 'g');
+  const validNumbersRegex = new RegExp(VALID_NUMBERS.join('|').concat('|\\d'));
 
   const result = lines.reduce((acc, line) => {
-    const numbers = line.match(validNumbersRegex);
+    const numbers = [];
+    let match = null;
+
+    do {
+      match = line.match(validNumbersRegex);
+      if (match) {
+        numbers.push(match[0]);
+        let nextIndex = match.index + 1;
+        line = line.substring(nextIndex);
+      }
+    } while (match !== null);
 
     const parsedNumbers = numbers.map((number) => {
       if (VALID_NUMBERS.includes(number)) {
@@ -34,7 +44,6 @@ const part2 = (rawInput) => {
       return number;
     });
 
-    console.log(parsedNumbers[0], parsedNumbers[parsedNumbers.length - 1]);
     return acc + parseInt(parsedNumbers[0] + parsedNumbers[parsedNumbers.length - 1]);
   }, 0);
 
@@ -66,6 +75,12 @@ zoneight234
 7pqrstsixteen`,
         expected: 281,
       },
+      {
+        input: `eightwo
+nineeightseven2
+zoneight`,
+        expected: 192,
+      }
     ],
     solution: part2,
   },
