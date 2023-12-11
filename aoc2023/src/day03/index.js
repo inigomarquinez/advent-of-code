@@ -40,22 +40,27 @@ const parseInput = (rawInput) => {
 const part1 = (rawInput) => {
   const input = parseInput(rawInput);
 
-  const isAdjacent = (number) => (symbol) => {
-    return symbol.row >= number.rowMin && symbol.row <= number.rowMax && symbol.column >= number.columnMin && symbol.column <= number.columnMax;
-  }
+  const isAdjacent = (number) => (symbol) =>
+    symbol.row >= number.rowMin && symbol.row <= number.rowMax && symbol.column >= number.columnMin && symbol.column <= number.columnMax;
 
-  const result = input.numbers.reduce((acc, number) => {
+  return input.numbers.reduce((acc, number) => {
     let isAdjacentToSymbol = input.symbols.some(isAdjacent(number));
     return isAdjacentToSymbol ? acc + number.number : acc;
   }, 0);
-
-  return result;
 };
 
 const part2 = (rawInput) => {
   const input = parseInput(rawInput);
 
-  return;
+  const possibleGears = input.symbols.filter(symbol => symbol.symbol === '*');
+
+  const isAdjacent = (gear) => (number) =>
+    gear.row >= number.rowMin && gear.row <= number.rowMax && gear.column >= number.columnMin && gear.column <= number.columnMax;
+
+  return possibleGears.reduce((acc, gear) => {
+    const adjacentSymbols = input.numbers.filter(isAdjacent(gear));
+    return adjacentSymbols.length === 2 ? acc + adjacentSymbols[0].number * adjacentSymbols[1].number : acc;
+  }, 0);
 };
 
 run({
@@ -79,10 +84,19 @@ run({
   },
   part2: {
     tests: [
-      // {
-      //   input: ``,
-      //   expected: "",
-      // },
+      {
+        input: `467..114..
+...*......
+..35..633.
+......#...
+617*......
+.....+.58.
+..592.....
+......755.
+...$.*....
+.664.598..`,
+        expected: 467835,
+      },
     ],
     solution: part2,
   },
