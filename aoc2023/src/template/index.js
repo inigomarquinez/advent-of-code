@@ -1,4 +1,8 @@
 import run from "aocrunner";
+import debug from 'debug';
+
+const log1 = debug('part1');
+const log2 = debug('part2');
 
 const parseInput = (rawInput) => rawInput;
 
