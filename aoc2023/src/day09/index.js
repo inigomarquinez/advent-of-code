@@ -10,26 +10,31 @@ const parseInput = (rawInput) => {
   return lines.map((value => value.split(' ').map((value) => parseInt(value))));
 };
 
+const calculateDiffSequence = (history) => {
+  let diffSequenceArray = [[...history]];
+  let currentDiffIndex = 0;
+
+  while (!diffSequenceArray[currentDiffIndex].every(value => value === 0)) {
+    const diff = diffSequenceArray[currentDiffIndex].reduce((acc, value, index, array) => {
+      if (index === 0) {
+        return acc;
+      }
+      return [...acc, value - array[index - 1]];
+    }, []);
+
+    diffSequenceArray.push(diff);
+    currentDiffIndex++;
+  }
+
+  return diffSequenceArray;
+}
+
 const part1 = (rawInput) => {
   const input = parseInput(rawInput);
   log1('input :>> ', input);
 
   return input.reduce((acc, history, index) => {
-    let diffSequenceArray = [[...history]];
-    let currentDiffIndex = 0;
-
-    while (!diffSequenceArray[currentDiffIndex].every(value => value === 0)) {
-      const diff = diffSequenceArray[currentDiffIndex].reduce((acc, value, index, array) => {
-        if (index === 0) {
-          return acc;
-        }
-        return [...acc, value - array[index - 1]];
-      }, []);
-
-      diffSequenceArray.push(diff);
-      currentDiffIndex++;
-    }
-
+    const diffSequenceArray = calculateDiffSequence(history);
     log1(`diffSequenceArray for history ${index} :>> `, diffSequenceArray);
 
     const extrapolatedValue = diffSequenceArray.toReversed().reduce((acc, diffSequence, index, array) =>
@@ -44,8 +49,20 @@ const part1 = (rawInput) => {
 
 const part2 = (rawInput) => {
   const input = parseInput(rawInput);
+  log2('input :>> ', input);
 
-  return;
+  return input.reduce((acc, history, index) => {
+    const diffSequenceArray = calculateDiffSequence(history);
+    log2(`diffSequenceArray for history ${index} :>> `, diffSequenceArray);
+
+    const extrapolatedValue = diffSequenceArray.toReversed().reduce((acc, diffSequence, index, array) =>
+      index === 0 ? acc : diffSequence[0] - acc
+      , 0);
+
+    log2(`extrapolated value for history ${index} :>> `, extrapolatedValue);
+
+    return acc + extrapolatedValue;
+  }, 0);
 };
 
 run({
@@ -62,10 +79,12 @@ run({
   },
   part2: {
     tests: [
-      // {
-      //   input: ``,
-      //   expected: "",
-      // },
+      {
+        input: `0 3 6 9 12 15
+1 3 6 10 15 21
+10 13 16 21 30 45`,
+        expected: 2,
+      },
     ],
     solution: part2,
   },
