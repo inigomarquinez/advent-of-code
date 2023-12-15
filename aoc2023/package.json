@@ -5,6 +5,8 @@
   "type": "module",
   "scripts": {
     "start": "aocrunner day",
+    "dev1": "DEBUG=part1 aocrunner day",
+    "dev2": "DEBUG=part2 aocrunner day",
     "format": "prettier -w src",
     "update:readme": "aocrunner update:readme"
   },
