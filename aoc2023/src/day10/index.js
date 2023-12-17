@@ -133,18 +133,15 @@ const getConnectedPipes = (surface, row, col) => {
 
 const isSamePosition = (pos1, pos2) => pos1.row === pos2.row && pos1.col === pos2.col;
 
-const part1 = (rawInput) => {
-  const input = parseInput(rawInput);
-  log1('input :>> ', input);
-
+const buildLoop = (surface) => {
   const loop = [];
 
-  const initialPipe = getStartingPoint(input);
+  const initialPipe = getStartingPoint(surface);
   log1('initialPipe :>> ', initialPipe);
   loop.push(initialPipe);
   log1('loop :>> ', loop);
 
-  let connectedPipes = getConnectedPipes(input, initialPipe.row, initialPipe.col);
+  let connectedPipes = getConnectedPipes(surface, initialPipe.row, initialPipe.col);
   log1('connectedPipes :>> ', connectedPipes);
 
   let previousPipe = initialPipe;
@@ -153,7 +150,7 @@ const part1 = (rawInput) => {
   while (!isSamePosition(currentPipe, initialPipe)) {
     log1('previousPipe :>> ', previousPipe);
     log1('currentPipe :>> ', currentPipe);
-    connectedPipes = getConnectedPipes(input, currentPipe.row, currentPipe.col);
+    connectedPipes = getConnectedPipes(surface, currentPipe.row, currentPipe.col);
     log1('connectedPipes :>> ', connectedPipes);
     const nextPipeInLoop = connectedPipes.filter(pipe => !isSamePosition(pipe, previousPipe))[0];
     log1('nextPipeInLoop :>> ', nextPipeInLoop);
@@ -163,12 +160,60 @@ const part1 = (rawInput) => {
     currentPipe = nextPipeInLoop;
   }
 
+  return loop;
+}
+
+const isPipePartOfTheLoop = (loopByRows, row, col) => loopByRows[row] && loopByRows[row].includes(col);
+
+const part1 = (rawInput) => {
+  const input = parseInput(rawInput);
+  log1('input :>> ', input);
+
+  const loop = buildLoop(input);
+
   return loop.length / 2;
 };
 
 const part2 = (rawInput) => {
   const input = parseInput(rawInput);
+  log2('input :>> ', input);
 
+  // const loop = buildLoop(input);
+  // log2('loop :>> ', loop);
+
+  // const loopByRows = loop.reduce((acc, pipe) => {
+  //   if (!acc[pipe.row]) acc[pipe.row] = [];
+  //   acc[pipe.row].push(pipe.col);
+  //   acc[pipe.row].sort();
+  //   return acc;
+  // }, {});
+  // log2('loopByRows :>> ', loopByRows);
+
+
+  // let enclosed = 0;
+  // for (let row = 0; row < input.length; row++) {
+  //   for (let col = 0; col < input[row].length; col++) {
+  //     if (!isPipePartOfTheLoop(loopByRows, row, col)) {
+  //       let pipesToTheWest = 0;
+  //       let pipesToTheEast = 0;
+
+  //       if (loopByRows[row]) {
+  //         pipesToTheWest = loopByRows[row].filter(pipe => {
+  //           if (input[row][pipe] === PIPE_TYPE.HORIZONTAL) return false;
+  //           return pipe < col;
+  //         }).length;
+  //         pipesToTheEast = loopByRows[row].length - pipesToTheWest;
+  //       }
+
+  //       if ((pipesToTheWest !== 0 && pipesToTheWest % 2 !== 0) &&
+  //         (pipesToTheEast !== 0 && pipesToTheEast % 2 !== 0)) {
+  //         enclosed++;
+  //       }
+  //     }
+  //   }
+  // }
+
+  // return enclosed;
   return;
 };
 
@@ -196,10 +241,56 @@ LJ.LJ`,
   },
   part2: {
     tests: [
-      // {
-      //   input: ``,
-      //   expected: "",
-      // },
+      {
+        input: `...........
+.S-------7.
+.|F-----7|.
+.||.....||.
+.||.....||.
+.|L-7.F-J|.
+.|..|.|..|.
+.L--J.L--J.
+...........`,
+        expected: 4,
+      },
+      {
+        input: `..........
+.S------7.
+.|F----7|.
+.||....||.
+.||....||.
+.|L-7F-J|.
+.|..||..|.
+.L--JL--J.
+..........`,
+        expected: 4,
+      },
+      {
+        input: `.F----7F7F7F7F-7....
+.|F--7||||||||FJ....
+.||.FJ||||||||L7....
+FJL7L7LJLJ||LJ.L-7..
+L--J.L7...LJS7F-7L7.
+....F-J..F7FJ|L7L7L7
+....L7.F7||L7|.L7L7|
+.....|FJLJ|FJ|F7|.LJ
+....FJL-7.||.||||...
+....L---J.LJ.LJLJ...`,
+        expected: 8,
+      },
+      {
+        input: `FF7FSF7F7F7F7F7F---7
+L|LJ||||||||||||F--J
+FL-7LJLJ||||||LJL-77
+F--JF--7||LJLJIF7FJ-
+L---JF-JLJIIIIFJLJJ7
+|F|F-JF---7IIIL7L|7|
+|FFJF7L7F-JF7IIL---7
+7-L-JL7||F7|L7F-7F7|
+L.L7LFJ|||||FJL7||LJ
+L7JLJL-JLJLJL--JLJ.L`,
+        expected: 10,
+      }
     ],
     solution: part2,
   },
