@@ -71,7 +71,7 @@ const part1 = (rawInput) => {
 
       const shortestDistance = rowDistance + colDistance;
 
-      log1(`Shortest path from galaxy [${sourceGalaxy.row}, ${sourceGalaxy.col}] to galaxy [${destinationGalaxy.row}, ${destinationGalaxy.col}] is ${shortestDistance}`);
+      log2(`Shortest path from galaxy [${sourceGalaxy.row}, ${sourceGalaxy.col}] to galaxy [${destinationGalaxy.row}, ${destinationGalaxy.col}] is ${shortestDistance}`);
 
       return galaxyAcc + shortestDistance;
     }, 0);
@@ -85,8 +85,32 @@ const part1 = (rawInput) => {
 
 const part2 = (rawInput) => {
   const input = parseInput(rawInput);
+  log2(input);
 
-  return;
+  const EXPANSION_FACTOR = Math.pow(10, 6) - 1;
+
+  const totalShortestDistance = input.galaxies.reduce((acc, sourceGalaxy, sourceIndex, galaxiesArray) => {
+    const shortestPaths = galaxiesArray.reduce((galaxyAcc, destinationGalaxy, destinationIndex) => {
+      if (sourceIndex === destinationIndex) return galaxyAcc;
+
+      const expandedRows = input.rowsWithoutGalaxies.filter(row => row > Math.min(sourceGalaxy.row, destinationGalaxy.row) && row < Math.max(sourceGalaxy.row, destinationGalaxy.row));
+      const expandedCols = input.colsWithoutGalaxies.filter(col => col > Math.min(sourceGalaxy.col, destinationGalaxy.col) && col < Math.max(sourceGalaxy.col, destinationGalaxy.col));
+
+      const rowDistance = Math.abs(sourceGalaxy.row - destinationGalaxy.row) + (expandedRows.length * EXPANSION_FACTOR);
+      const colDistance = Math.abs(sourceGalaxy.col - destinationGalaxy.col) + (expandedCols.length * EXPANSION_FACTOR);
+
+      const shortestDistance = rowDistance + colDistance;
+
+      log2(`Shortest path from galaxy [${sourceGalaxy.row}, ${sourceGalaxy.col}] to galaxy [${destinationGalaxy.row}, ${destinationGalaxy.col}] is ${shortestDistance}`);
+
+      return galaxyAcc + shortestDistance;
+    }, 0);
+
+    return acc + shortestPaths;
+  }, 0);
+
+  // Take into account that we are double counting the paths
+  return totalShortestDistance / 2;
 };
 
 run({
@@ -110,10 +134,34 @@ run({
   },
   part2: {
     tests: [
-      // {
-      //   input: ``,
-      //   expected: "",
-      // },
+//       // EXPANSION_FACTOR = 10 - 1
+//       {
+//         input: `...#......
+// .......#..
+// #.........
+// ..........
+// ......#...
+// .#........
+// .........#
+// ..........
+// .......#..
+// #...#.....`,
+//         expected: 1030,
+//       },
+//       // EXPANSION_FACTOR = 100 - 1
+//       {
+//         input: `...#......
+// .......#..
+// #.........
+// ..........
+// ......#...
+// .#........
+// .........#
+// ..........
+// .......#..
+// #...#.....`,
+//         expected: 8410,
+//       },
     ],
     solution: part2,
   },
