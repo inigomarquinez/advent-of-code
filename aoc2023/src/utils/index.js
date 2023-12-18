@@ -22,3 +22,11 @@
  *     import myLib from '../utils/myLib'
  *     import { myUtil } from '../utils'
  */
+
+const transpose = (matrix) => matrix.reduce((prev, next) => next.map((item, i) =>
+  (prev[i] || []).concat(next[i])
+), []);
+
+export {
+  transpose
+};
